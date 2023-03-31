@@ -6,6 +6,7 @@ const App = () => (
     <h1>This is the Container App</h1>
     <hr />
     <MarketingApp />
+    <hr />
   </>
 );
 
