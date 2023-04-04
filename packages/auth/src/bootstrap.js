@@ -5,7 +5,7 @@ import { createMemoryHistory, createBrowserHistory } from "history";
 import App from "./App";
 
 const mount = (el, options = {}) => {
-  const { onNavigate, defaultHistory, initialPath } = options;
+  const { onNavigate, onSignIn, defaultHistory, initialPath } = options;
 
   const history =
     defaultHistory ||
@@ -14,7 +14,7 @@ const mount = (el, options = {}) => {
     });
   !!onNavigate && history.listen(onNavigate);
 
-  ReactDOM.render(<App history={history} />, el);
+  ReactDOM.render(<App history={history} onSignIn={onSignIn} />, el);
 
   return {
     onParentNavigate: ({ pathname: nextPathname }) => {
@@ -28,7 +28,7 @@ const mount = (el, options = {}) => {
 };
 
 if (process.env.NODE_ENV === "development") {
-  const devRoot = document.querySelector("#_mfp_marketing-dev-root");
+  const devRoot = document.querySelector("#_mfp_auth-dev-root");
   if (devRoot) {
     mount(devRoot, { defaultHistory: createBrowserHistory() });
   }
