@@ -1,5 +1,6 @@
-import React, { useState, lazy, Suspense } from "react";
-import { Switch, Route, BrowserRouter } from "react-router-dom";
+import React, { useState, useEffect, lazy, Suspense } from "react";
+import { Router, Switch, Route, Redirect } from "react-router-dom";
+import { createBrowserHistory } from "history";
 import {
   StylesProvider,
   createGenerateClassName,
@@ -10,6 +11,9 @@ import Loader from "./components/Loader";
 
 const AuthApp = lazy(() => import("./apps/AuthApp"));
 const MarketingApp = lazy(() => import("./apps/MarketingApp"));
+const DashboardApp = lazy(() => import("./apps/DashboardApp"));
+
+const history = createBrowserHistory();
 
 const generateClassName = createGenerateClassName({
   productionPrefix: "container--",
@@ -18,8 +22,14 @@ const generateClassName = createGenerateClassName({
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
 
+  useEffect(() => {
+    if (isSignedIn) {
+      history.push("/dashboard");
+    }
+  }, [isSignedIn]);
+
   return (
-    <BrowserRouter>
+    <Router history={history}>
       <StylesProvider generateClassName={generateClassName}>
         <div>
           <Header
@@ -31,12 +41,19 @@ const App = () => {
               <Route path="/auth">
                 <AuthApp onSignIn={() => setIsSignedIn(true)} />
               </Route>
+              <Route path="/dashboard">
+                {!isSignedIn ? (
+                  <Redirect to="/auth/signin" />
+                ) : (
+                  <DashboardApp />
+                )}
+              </Route>
               <Route path="/" component={MarketingApp} />
             </Switch>
           </Suspense>
         </div>
       </StylesProvider>
-    </BrowserRouter>
+    </Router>
   );
 };
 
